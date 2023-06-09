@@ -11,6 +11,15 @@ class TimesheetService extends BaseService {
                 return res
             })
     }
+
+    _currentId() {
+        return localStorage.getItem('id')
+    }
+    putTimesheet(body) {
+       return this.put({
+            ...body, route: this._currentId()
+        })
+    }
 }
 
 

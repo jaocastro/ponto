@@ -7,6 +7,7 @@
 
 <script setup>
 import {onMounted, ref, watch} from "vue";
+import {toHour} from "@/utils/date-helper.js";
 import moment from 'moment';
 
 const emit = defineEmits(['date'])
@@ -20,7 +21,7 @@ onMounted(() => {
 
 onMounted(() => {
   setInterval(() => {
-    horaAtual.value = moment().format('hh:mm:ss')
+    horaAtual.value = moment().format('HH:mm:ss')
   })
 })
 </script>

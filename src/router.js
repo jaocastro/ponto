@@ -16,7 +16,7 @@ const routes = [
         redirect: {name: 'PontoEletronico'},
         children: [
             {
-                path: '/pontoeletronico',
+                path: '/ponto-eletronico',
                 name: 'PontoEletronico',
                 component: PontoEletronico,
                 meta: {},

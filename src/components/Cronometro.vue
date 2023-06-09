@@ -7,17 +7,28 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
+import {computed, onMounted, ref} from "vue";
 
 const props = defineProps({
-  tempoEmSegundos: {
-    type: Number,
-    default: 0,
+  pause: {
+    type: Boolean,
+    default: false,
   },
 })
 
+const tempoEmSegundos = ref(0)
+const count = ref(0)
+
+onMounted(() => {
+  count.value = setInterval(() => {
+    if (props.pause) {
+      tempoEmSegundos.value += 1
+    }
+  }, 1000)
+})
+
 const tempoDecorrido = computed(() => {
-  return new Date(props.tempoEmSegundos * 1000).toISOString().substr(11,8)
+  return new Date(tempoEmSegundos.value * 1000).toISOString().substr(11,8)
 })
 </script>
 
