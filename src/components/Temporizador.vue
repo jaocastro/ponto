@@ -2,16 +2,20 @@
   <div>
     <div class="flex justify-between mt-5 font-bold">
       <PresentDate @date="date = $event" />
-      <Cronometro :pause="pause" />
+      <Cronometro :pause="pause" :reset="reset"/>
     </div>
 
     <div class="flex items-center justify-center w-full gap-10 mt-5">
       <Button
           v-for="item in pontosTime"
-          @clicked="iniciar(item.id)"
+          @clicked="state(item.id)"
           :text="item.status"
           :btn-disabled="(atual !== item.status)"
       />
+    </div>
+
+    <div v-show="!moreItens" class="w-full justify-center flex mt-5">
+      <span class="bg-red-400 rounded-sm w-full text-center py-2">Não é possível criar mais de um ponto por dia!</span>
     </div>
   </div>
 </template>
@@ -22,10 +26,15 @@ import Button from "@/components/Button.vue";
 import Cronometro from "@/components/Cronometro.vue";
 import PresentDate from "@/components/PresentDate.vue";
 import TimesheetService from "@/network/services/timesheet-service.js";
+import {toBrDate} from "@/utils/date-helper.js";
+import {usePontoStore} from "@/stores/ponto.js";
 
 const emit = defineEmits(['refreshTable'])
 const pause = ref(false)
 const date = ref('')
+const pontoStore = usePontoStore()
+const moreItens = ref(false)
+const reset = ref(false)
 const pontosTime = ref([
   {
     id: 0,
@@ -53,7 +62,6 @@ onMounted(() => {
 })
 
 const atual = ref('CHEGUEI')
-const clearCronometro = ref(false)
 
 function salvarLocalStorege() {
   return localStorage.setItem('atual', atual.value)
@@ -63,33 +71,48 @@ function getAtual() {
   return localStorage.getItem('atual') || 'CHEGUEI'
 }
 
-async function iniciar(tipo) {
-  if (tipo === pontosTime.value.length - 1) {
-    await attPonto(tipo)
-    pause.value = false
-    atual.value = pontosTime.value[0].status
-  } else {
-    if (tipo === 0) {
-      await firstPonto()
-          .then((e) => {
-            return localStorage.setItem('id', e.data.id)
-          })
-    } else {
-      await attPonto(tipo)
+async function isPossibleNewDate(tipo) {
+  let verificarData = await pontoStore.validateDay()
 
-      if (tipo === 1) {
-        pause.value = false
-      }
-
-      if (tipo === 2) {
-        pause.value = true
-      }
-
-    }
-    atual.value = pontosTime.value[tipo+1].status
+  if (toBrDate(verificarData) === toBrDate() && verificarData !== null && tipo === 0) {
+    moreItens.value = false
+    return false
   }
+  moreItens.value = true
+  return true
+}
 
-  salvarLocalStorege()
+async function state(tipo) {
+  if (await isPossibleNewDate(tipo)) {
+    if (tipo === pontosTime.value.length - 1) {
+      await attPonto(tipo)
+      pause.value = false
+      reset.value = true
+      atual.value = pontosTime.value[0].status
+    } else {
+      if (tipo === 0) {
+        await firstPonto()
+            .then((e) => {
+              return localStorage.setItem('id', e.data.id)
+            })
+
+      } else {
+        await attPonto(tipo)
+
+        if (tipo === 1) {
+          pause.value = false
+        }
+
+        if (tipo === 2) {
+          pause.value = true
+        }
+
+      }
+      atual.value = pontosTime.value[tipo+1].status
+    }
+
+    salvarLocalStorege()
+  }
 }
 
 function attPonto(tipo) {
@@ -124,6 +147,7 @@ function firstPonto() {
         return e
       })
 }
+
 
 </script>
 

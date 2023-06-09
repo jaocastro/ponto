@@ -7,13 +7,17 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 
 const props = defineProps({
   pause: {
     type: Boolean,
     default: false,
   },
+  reset: {
+    type: Boolean,
+    default: false,
+  }
 })
 
 const tempoEmSegundos = ref(0)
@@ -22,10 +26,15 @@ const count = ref(0)
 onMounted(() => {
   count.value = setInterval(() => {
     if (props.pause) {
-      console.log(props.pause)
       tempoEmSegundos.value += 1
     }
   }, 1000)
+})
+
+watch(() => props.reset, () => {
+  if (props.reset) {
+    tempoEmSegundos.value = 0
+  }
 })
 
 const tempoDecorrido = computed(() => {

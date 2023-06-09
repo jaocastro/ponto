@@ -10,7 +10,8 @@ export const usePontoStore = defineStore('ponto', {
             endLunch: null,
             end: null,
         },
-        pontos: []
+        pontos: [],
+        date:[]
     }),
     getters: {
         lastPonto: state => {
@@ -19,11 +20,24 @@ export const usePontoStore = defineStore('ponto', {
     },
     actions: {
         async getTimeSheet() {
-            await TimesheetService.getTimesheet()
+            return await TimesheetService.getTimesheet()
                 .then((response) => {
-                    this.pontos = response.data
-                    this.ponto = response.data.items[0]
+                    if (response.data !== undefined && response.data.items.length > 0) {
+                        this.pontos = response.data
+                        this.ponto = response.data.items[0]
+                        this.date = response.data.items[0].start
+                    }
                     return response
+                })
+        },
+
+        async validateDay() {
+            return await TimesheetService.getTimesheet()
+                .then((response) => {
+                    if (response.data !== undefined && response.data.items.length > 0) {
+                        return response.data.items[0].start
+                    }
+                    return null
                 })
         },
     },

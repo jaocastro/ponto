@@ -42,7 +42,7 @@
         <td class="px-6 py-4">{{ item?.startLunch ? toHour(item.startLunch) : '-' }}</td>
         <td class="px-6 py-4">{{ item?.endLunch ? toHour(item.endLunch) : '-' }}</td>
         <td class="px-6 py-4">{{ item?.end ? toHour(item.end) : '-' }}</td>
-        <td class="px-6 py-4">{{ subtrairHoras(item.start, item.end)}}</td>
+        <td class="px-6 py-4">{{ item?.end ? subtrairHoras(item.start, item.startLunch, item.endLunch,item.end) : '-'}}</td>
         <td class="px-6 py-4">
           <div class="flex justify-end gap-4">
             <a @click="deletePonto(item.id)">
@@ -61,7 +61,7 @@
 <script setup>
 import {toBrDate, toHour} from "@/utils/date-helper.js";
 import Loader from "@/components/Loader.vue";
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import moment from "moment";
 
 const props = defineProps({
@@ -78,16 +78,24 @@ const propLength = computed(() => {
   return props.pontos.count
 });
 
-function subtrairHoras(horaInicial, horaFinal) {
+function subtrairHoras(horaChegada, idaAlmoco, voltaAlmoco, horaSaida) {
   const formatoHora = 'HH:mm:ss';
-  const diff = moment.utc(moment(horaFinal, formatoHora).diff(moment(horaInicial, formatoHora)));
-  const duracao = moment.duration(diff);
 
-  const horas = duracao.hours();
-  const minutos = duracao.minutes();
-  const segundos = duracao.seconds();
+  const chegada = moment(horaChegada, formatoHora);
+  const almoco = moment(idaAlmoco, formatoHora);
+  const retornoAlmoco = moment(voltaAlmoco, formatoHora);
+  const saida = moment(horaSaida, formatoHora);
 
-  return `${horas.toString().padStart(2, "0")}:${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
+  const duracaoTrabalho = moment.duration(saida.diff(chegada));
+  const duracaoAlmoco = moment.duration(retornoAlmoco.diff(almoco));
+
+  const duracaoTotal = duracaoTrabalho.subtract(duracaoAlmoco);
+
+  const horas = Math.floor(duracaoTotal.asHours()).toString().padStart(2, '0');
+  const minutos = duracaoTotal.minutes().toString().padStart(2, '0');
+  const segundos = duracaoTotal.seconds().toString().padStart(2, '0');
+
+  return `${horas}:${minutos}:${segundos}`;
 }
 
 function deletePonto(id) {

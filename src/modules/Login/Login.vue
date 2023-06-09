@@ -1,6 +1,6 @@
 <template>
   <div class="flex">
-    <section class="w-full bg-white">
+    <section class="w-full h-screen bg-[#F5F6F7]">
       <div class="container">
         <div class="flex items-center mt-20 flex-col">
           <div class="w-[534px] flex flex-col items-center">
@@ -8,30 +8,17 @@
               <h1 class="font-bold text-[44px]">Bem vindo</h1>
             </div>
 
-            <form action="#" class="mt-16 flex flex-col gap-6">
+            <form action="#" class="mt-16 flex flex-col gap-6 bg-white p-10 rounded-lg shadow-xl">
               <div class="flex w-[320px] flex-col items-end gap-6">
                 <div class="relative w-full">
-                  <input
-                    type="text" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-[4px] border border-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                    placeholder=" "
-                    v-model="inputsValue.userID"
-                  />
-                  <label
-                    for="floating_outlined"
-                    class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-                  >Endereço de email</label>
+                  <label class="font-semibold">Endereço de email</label>
+                  <input v-model="inputsValue.userID" type="text" placeholder="Email" class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600">
+
                 </div>
 
                 <div class="relative w-full">
-                  <input
-                      type="password" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-[4px] border border-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                      placeholder=" "
-                      v-model="inputsValue.accessKey"
-                  />
-                  <label
-                      for="floating_outlined"
-                      class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
-                  >Senha</label>
+                  <label class="font-semibold">Senha</label>
+                  <input v-model="inputsValue.accessKey" type="password" placeholder="Email" class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600">
                 </div>
               </div>
 

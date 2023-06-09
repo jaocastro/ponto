@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col items-center h-auto">
-    <div class="flex w-full justify-between gap-10">
+    <div class="flex w-full justify-between gap-10 items-center">
       <div>
-        logo
+        <img class="w-[120px]" src="../../assets/logothera.jpeg" alt="">
       </div>
 
-      <div>
+      <div class="mr-10">
         Olá, <strong>{{ user }}</strong>!
       </div>
 
@@ -40,11 +40,9 @@ onMounted(() => {
 
 async function getTimesheet() {
   loading.value = true
-  await pontoStore.getTimeSheet()
-      .then(() => {
-        pontos.value = pontoStore.pontos
-      })
-      .finally(() => {
+  TimesheetService.getTimesheet()
+      .then((response) => {
+        pontos.value = response.data
         loading.value = false
       })
 }
