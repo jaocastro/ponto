@@ -20,12 +20,11 @@
 </template>
 
 <script setup>
-import {computed, onMounted, reactive, ref, watch} from "vue";
+import {onMounted, ref} from "vue";
 import PontoTable from "@/components/Table.vue";
 import UserService from "@/network/services/user-service.js";
 import router from "@/router.js";
 import TimesheetService from "@/network/services/timesheet-service.js";
-import Loader from "@/components/Loader.vue";
 import {usePontoStore} from "@/stores/ponto.js";
 import Temporizador from "@/components/Temporizador.vue";
 
@@ -33,8 +32,6 @@ const pontos = ref([])
 const loading = ref(false)
 const user = ref({})
 const pontoStore = usePontoStore()
-
-const verificar = ref(0)
 
 onMounted(() => {
   user.value = UserService.getUser()

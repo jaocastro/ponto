@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="flex justify-between mt-5 font-bold">
-      <PresentDate @date="date = $event"/>
-      <Cronometro :pause="pause"/>
+      <PresentDate @date="date = $event" />
+      <Cronometro :pause="pause" />
     </div>
 
     <div class="flex items-center justify-center w-full gap-10 mt-5">
       <Button
-          v-for="item in pontos"
+          v-for="item in pontosTime"
           @clicked="iniciar(item.id)"
           :text="item.status"
           :btn-disabled="(atual !== item.status)"
@@ -24,12 +24,9 @@ import PresentDate from "@/components/PresentDate.vue";
 import TimesheetService from "@/network/services/timesheet-service.js";
 
 const emit = defineEmits(['refreshTable'])
-const horaAlmoco = ref('')
-const horaVoltaAlmoco = ref('')
-const horaSaida = ref('')
 const pause = ref(false)
 const date = ref('')
-const pontos = ref([
+const pontosTime = ref([
   {
     id: 0,
     status: 'CHEGUEI',
@@ -56,6 +53,7 @@ onMounted(() => {
 })
 
 const atual = ref('CHEGUEI')
+const clearCronometro = ref(false)
 
 function salvarLocalStorege() {
   return localStorage.setItem('atual', atual.value)
@@ -66,9 +64,10 @@ function getAtual() {
 }
 
 async function iniciar(tipo) {
-  if (tipo === pontos.value.length - 1) {
-    await attPonto()
-    atual.value = pontos.value[0].status
+  if (tipo === pontosTime.value.length - 1) {
+    await attPonto(tipo)
+    pause.value = false
+    atual.value = pontosTime.value[0].status
   } else {
     if (tipo === 0) {
       await firstPonto()
@@ -76,22 +75,39 @@ async function iniciar(tipo) {
             return localStorage.setItem('id', e.data.id)
           })
     } else {
-      await attPonto()
+      await attPonto(tipo)
+
+      if (tipo === 1) {
+        pause.value = false
+      }
+
+      if (tipo === 2) {
+        pause.value = true
+      }
+
     }
-    atual.value = pontos.value[tipo+1].status
+    atual.value = pontosTime.value[tipo+1].status
   }
 
   salvarLocalStorege()
 }
 
-function attPonto() {
+function attPonto(tipo) {
+  let obj = {
+    1: {
+      startLunch: new Date().toLocaleTimeString()
+    },
+    2: {
+      endLunch: new Date().toLocaleTimeString()
+    },
+    3: {
+      end: new Date().toLocaleTimeString()
+    }
+  }
+
   return TimesheetService
       .putTimesheet({
-        body: {
-          startLunch: horaAlmoco.value,
-          endLunch: horaVoltaAlmoco.value,
-          end: horaSaida.value,
-        }
+        body: obj[tipo]
       })
       .then((e) => {
         emit('refreshTable')

@@ -2,7 +2,7 @@
   <div class="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
     <table class="w-full border-collapse bg-white text-left text-sm text-gray-500">
       <thead class="bg-gray-50">
-      <tr>
+      <tr class="text-center">
         <th scope="col" class="px-6 py-4 font-medium text-gray-900">Data</th>
         <th scope="col" class="px-6 py-4 font-medium text-gray-900">Hora início</th>
         <th scope="col" class="px-6 py-4 font-medium text-gray-900">Almoço início</th>
@@ -36,13 +36,13 @@
         class="divide-y divide-gray-100 border-t border-gray-100"
         v-for="(item, index) in props.pontos.items" :key="index"
       >
-      <tr class="hover:bg-gray-50">
-        <td class="px-6 py-4">{{ item.id }}</td>
+      <tr class="hover:bg-gray-50 text-center">
+        <td class="px-6 py-4">{{ toBrDate(item.start) }}</td>
         <td class="px-6 py-4">{{ toHour(item.start) }}</td>
-        <td class="px-6 py-4">{{ toHour(item.startLunch) }}</td>
-        <td class="px-6 py-4">{{ toHour(item.endLunch) }}</td>
-        <td class="px-6 py-4">{{ toHour(item.end) }}</td>
-<!--        <td class="px-6 py-4">{{ item.tempo }}</td>-->
+        <td class="px-6 py-4">{{ item?.startLunch ? toHour(item.startLunch) : '-' }}</td>
+        <td class="px-6 py-4">{{ item?.endLunch ? toHour(item.endLunch) : '-' }}</td>
+        <td class="px-6 py-4">{{ item?.end ? toHour(item.end) : '-' }}</td>
+        <td class="px-6 py-4">{{ subtrairHoras(item.start, item.end)}}</td>
         <td class="px-6 py-4">
           <div class="flex justify-end gap-4">
             <a @click="deletePonto(item.id)">
@@ -59,9 +59,10 @@
 </template>
 
 <script setup>
-import {toHour} from "@/utils/date-helper.js";
+import {toBrDate, toHour} from "@/utils/date-helper.js";
 import Loader from "@/components/Loader.vue";
 import {computed} from "vue";
+import moment from "moment";
 
 const props = defineProps({
   pontos: {
@@ -76,6 +77,18 @@ const emit = defineEmits(['delItem'])
 const propLength = computed(() => {
   return props.pontos.count
 });
+
+function subtrairHoras(horaInicial, horaFinal) {
+  const formatoHora = 'HH:mm:ss';
+  const diff = moment.utc(moment(horaFinal, formatoHora).diff(moment(horaInicial, formatoHora)));
+  const duracao = moment.duration(diff);
+
+  const horas = duracao.hours();
+  const minutos = duracao.minutes();
+  const segundos = duracao.seconds();
+
+  return `${horas.toString().padStart(2, "0")}:${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
+}
 
 function deletePonto(id) {
   emit('delItem', id)

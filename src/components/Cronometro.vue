@@ -22,6 +22,7 @@ const count = ref(0)
 onMounted(() => {
   count.value = setInterval(() => {
     if (props.pause) {
+      console.log(props.pause)
       tempoEmSegundos.value += 1
     }
   }, 1000)
